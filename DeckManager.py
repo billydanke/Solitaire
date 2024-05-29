@@ -12,7 +12,7 @@ cardSize = [100, 150]
 laneList = []
 suitStackList = []
 
-grabbedCard = None
+grabbedCardList = []
 
 def drawCard():
     card = random.choice(deck)
@@ -20,7 +20,11 @@ def drawCard():
     return card
 
 def laneCardAcceptanceCheck(card: Card, lane: CardLane) -> bool:
-    topCardSuit,topCardNumber = lane.getTopmostCard()
+    topCardSuit,topCardNumber,_ = lane.getTopmostCard()
+    #print("lane:",lane.laneNumber,"topCardSuit:",topCardSuit,"topCardNumber:",topCardNumber,"Current card number:",card.cardNumber,"Lane Count:",len(lane.cards))
+
+    if(type(card.owner) == CardLane and lane.laneNumber == card.owner.laneNumber):
+        return False
 
     # Number check
     if(card.cardNumber != topCardNumber - 1):
@@ -38,7 +42,7 @@ def laneCardAcceptanceCheck(card: Card, lane: CardLane) -> bool:
     return True
 
 def suitStackCardAcceptanceCheck(card: Card, stack: SuitStack) -> bool:
-    topCardSuit,topCardNumber = stack.getTopmostCard()
+    _,topCardNumber,_ = stack.getTopmostCard()
 
     # Number check
     if(card.cardNumber != topCardNumber + 1):

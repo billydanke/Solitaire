@@ -17,9 +17,12 @@ menu.addContentItem(leftRect) # Note that order you add content items to the men
 menu.addContentItem(rightRect)
 
 for i in range(1,8):
-    cardLane = CardLane(200 + (i-1) * (DeckManager.cardSize[0] + 30), 50, i)
+    cardLane = CardLane(200 + (i-1) * (DeckManager.cardSize[0] + 30), 50, i, 30)
     for j in range(0,i):
-        cardLane.cards.append(Card(cardLane.x,cardLane.y + (j*30),"Hearts",j+1,False,cardLane,True))
+        if(j % 2 == 0):
+            cardLane.cards.append(Card(cardLane.x,cardLane.y + (j*30),"Hearts",j+1,False,cardLane,True))
+        else:
+            cardLane.cards.append(Card(cardLane.x,cardLane.y + (j*30),"Clubs",j+1,False,cardLane,True))
     
     menu.addContentItem(cardLane)
 
@@ -39,17 +42,15 @@ def draw():
 
     menu.draw(EventManager.screen)
 
-    if(DeckManager.grabbedCard != None):
-        DeckManager.grabbedCard.draw(EventManager.screen)
+    for card in DeckManager.grabbedCardList:
+        card.draw(EventManager.screen)
 
     pygame.display.flip()
 
 def logicLoop():
-    EventManager.logicClock.tick(60) # This is your wait between frames. In this case, 33ms = ~30fps.
+    EventManager.logicClock.tick(60)
     EventManager.EventManager.UpdateMousePosition()
     EventManager.EventManager.Check()
-
-    
 
     draw()
 

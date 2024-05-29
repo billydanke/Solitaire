@@ -6,6 +6,7 @@ buttonList = []
 cardList = []
 windowSize = (1280,720)
 screen = pygame.display.set_mode(windowSize)
+pygame.display.set_caption('Solitaire')
 running = True
 logicClock = pygame.time.Clock()
 lastInteractionTimestamp = datetime.now()

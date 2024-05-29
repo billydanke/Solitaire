@@ -11,13 +11,12 @@ class Card():
         self.height = DeckManager.cardSize[1]
         self.cardSuit = cardSuit
         self.cardNumber = cardNumber
-        self.flippedOver = flippedOver
         
         self.cardRectangle = PyGameComponents.Rectangle(self.x, self.y, self.width, self.height, (255,255,255), 255, 0, 5, True)
-        self.borderRectangle = PyGameComponents.Rectangle(self.x, self.y, self.width, self.height, (100,100,100), 255, 2, 5, True)
+        self.borderRectangle = PyGameComponents.Rectangle(self.x, self.y, self.width, self.height, (240,240,240), 255, 4, 5, True)
 
         self.labelText,self.labelColor = self.generateLabelInfo()
-        self.cardLabel = PyGameComponents.Text(self.x + 20, self.y + 15, self.labelText, "arial", 18, self.labelColor)
+        self.cardLabel = PyGameComponents.Text(self.x + 20, self.y + 15, self.labelText, "arial", 18, self.labelColor, True)
 
         # Linear interpolation movement stuff
         self.lerpSourceX = 0
@@ -30,33 +29,69 @@ class Card():
 
         # Click and drag movement stuff
         self.moveWithMouse = False
+        self.moveWithCard = False
+        self.parentCard = None
+        self.childCard = None
         self.pressed = False
         self.dragSourceX = 0
         self.dragSourceY = 0
 
         self.owner = owner
+        self.setFlipState(flippedOver)
 
         self.isDrawn = isDrawn
         EventManager.cardList.append(self)
 
     def pressDown(self):
-        if(self.isDrawn and not self.flippedOver):
+        if(self.isDrawn and not self.flippedOver and not self.inLerpMovement):
             self.moveWithMouse = True
             self.pressed = True
-            DeckManager.grabbedCard = self
+            DeckManager.grabbedCardList.append(self)
+            #print("-----")
+            #print(f"Picking up card {self.labelText}")
+
+            # Get children cards and append them as well
+            childCards:list[Card] = self.owner.getChildCards(self)
+
             self.owner.cards.remove(self)
 
-        self.dragSourceX = self.x
-        self.dragSourceY = self.y
+            for index,card in enumerate(childCards):
+                card.moveWithCard = True
+
+                # Get parent cards
+                if(index == 0):
+                    card.parentCard = self
+                else:
+                    card.parentCard = childCards[index-1]
+
+                # Set this card's parent's child to this. (lol confusing)
+                card.parentCard.childCard = card
+
+                DeckManager.grabbedCardList.append(card)
+                card.owner.cards.remove(card)
+                card.dragSourceX = card.x
+                card.dragSourceY = card.y
+
+                #print(f"Picking up child card {card.labelText}")
+
+            self.dragSourceX = self.x
+            self.dragSourceY = self.y
 
     def pressUp(self):
         self.moveWithMouse = False
         self.pressed = False
 
+        for card in DeckManager.grabbedCardList:
+            EventManager.cardList.remove(card)
+            EventManager.cardList.append(card)
+
         # Check if the card is flipped over or not drawn. If it is we don't want to do anything with it, so return.
         if(self.flippedOver or not self.isDrawn):
-            DeckManager.grabbedCard = None
-            self.owner.cards.append(self)
+            for card in DeckManager.grabbedCardList:
+                card.moveWithCard = False
+                card.parentCard = None
+                card.owner.cards.append(card)
+            DeckManager.grabbedCardList = []
             return
 
         # If the mouse didnt move between click and release, see if we can auto-move
@@ -73,9 +108,10 @@ class Card():
                 if(acceptance):
                     destination = lane
                     break
+            #print("---------")
             
             # Check for any open stack locations
-            if(destination == None):
+            if(destination == None and self.childCard == None):
                 for stack in DeckManager.suitStackList:
                     acceptance = DeckManager.suitStackCardAcceptanceCheck(self,stack)
                     if(acceptance):
@@ -84,12 +120,21 @@ class Card():
             
             # Assign the new ownership if applicable
             if(destination != None):
+                _,_,card = self.owner.getTopmostCard()
+                if(card != None and card.flippedOver): # Unflip the card above in the original lane
+                    card.setFlipState(False)
+
                 self.owner = destination
-                self.lerpTo(destination.x, destination.y, 0.1)
+                dropPosition = [destination.x, destination.getCardDropPosition()]
+                self.lerpTo(dropPosition[0], dropPosition[1], 0.1)
             else:
                 self.lerpTo(self.dragSourceX, self.dragSourceY, 0.1)
-            self.owner.cards.append(self)
-            DeckManager.grabbedCard = None
+            for card in DeckManager.grabbedCardList:
+                if(card.parentCard != None):
+                    card.owner = card.parentCard.owner
+                card.moveWithCard = False
+                card.owner.cards.append(card)
+            DeckManager.grabbedCardList = []
         else:
             # We can assume the mouse DID move.
             # Check for a good landing position. If there is one, lerp to it.
@@ -101,28 +146,56 @@ class Card():
                 withinBounds = Utils.PointWithinBounds(EventManager.releasePoint,lane)
                 if(withinBounds and DeckManager.laneCardAcceptanceCheck(self,lane)):
                     destination = lane
-            
+                    break
+            #print("---------")
+
             # Check if we dropped within bounds of a stack
-            if(destination == None):
+            if(destination == None and self.childCard == None):
                 for stack in DeckManager.suitStackList:
                     withinBounds = Utils.PointWithinBounds(EventManager.releasePoint,stack)
                     if(withinBounds and DeckManager.suitStackCardAcceptanceCheck(self,stack)):
                         destination = stack
+                        break
 
             # Assign the new ownership if applicable
             if(destination != None):
+                if(destination != None):
+                    _,_,card = self.owner.getTopmostCard()
+                    if(card != None and card.flippedOver): # Unflip the card above in the original lane
+                        card.setFlipState(False)
+                
                 self.owner = destination
-                self.lerpTo(destination.x, destination.y, 0.1)
+                dropPosition = [destination.x, destination.getCardDropPosition()]
+                self.lerpTo(dropPosition[0], dropPosition[1], 0.1)
             else:
                 self.lerpTo(self.dragSourceX, self.dragSourceY, 0.1)
-            self.owner.cards.append(self)
-            DeckManager.grabbedCard = None
+            for card in DeckManager.grabbedCardList:
+                if(card.parentCard != None):
+                    card.owner = card.parentCard.owner
+                card.owner.cards.append(card)
+                
+            DeckManager.grabbedCardList = []
 
     def drag(self):
         if(self.moveWithMouse):
-            
-            if(self.x >= 0 and self.x + self.width <= EventManager.windowSize[0] and self.y >= 0 and self.y + self.height <= EventManager.windowSize[1]):
-                self.setPosition(EventManager.mousePosition[0] - self.width/2, EventManager.mousePosition[1] - self.height/2)
+            x = EventManager.mousePosition[0] - self.width/2
+            y = EventManager.mousePosition[1] - self.height/2
+
+            if(x < 0):
+                x = 0
+            elif(x + self.width > EventManager.windowSize[0]):
+                x = EventManager.windowSize[0] - self.width
+
+            if(y < 0):
+                y = 0
+            elif(y + self.height > EventManager.windowSize[1]):
+                y = EventManager.windowSize[1] - self.height
+
+            self.setPosition(x, y)
+
+    def matchParentCard(self):
+        if(self.moveWithCard and self.parentCard != None):
+            self.setPosition(self.parentCard.x, self.parentCard.y + 30)
 
     def lerpTo(self, x, y, speed):
         self.lerpSourceX = self.x
@@ -143,8 +216,10 @@ class Card():
     def setFlipState(self, flip):
         if(flip == True):
             self.flippedOver = True
-            self.cardRectangle.setColor((50,50,200))
+            self.cardRectangle.setColor((19,87,156))
             self.cardLabel.isDrawn = False
+            if(self.owner.laneNumber == 1):
+                print(self.cardRectangle.color)
         else:
             self.flippedOver = False
             self.cardRectangle.setColor((255,255,255))
@@ -194,18 +269,30 @@ class Card():
             if(self.inLerpMovement):
                 # Increase the interpolation factor every draw frame
                 self.interpolationFactor += self.interpolationSpeed
-                if(self.interpolationFactor > 1):
+                if(self.interpolationFactor >= 1):
                     self.interpolationFactor = 1
                     self.inLerpMovement = False
                     self.setPosition(self.lerpTargetX, self.lerpTargetY)
+
+                    # We have now completed the interpolation. If we have any children, make sure to decouple them
+                    #print("interpolaton complete")
+                    childCard:Card = self.childCard
+                    while(childCard != None):
+                        card = childCard
+                        childCard = childCard.childCard
+
+                        #print(f"Decoupling {card.labelText}")
+                        card.moveWithCard = False
+                        card.parentCard = None
+                        card.childCard = None
+
                 else:
                     x = (1 - self.interpolationFactor) * self.lerpSourceX + self.interpolationFactor * self.lerpTargetX
                     y = (1 - self.interpolationFactor) * self.lerpSourceY + self.interpolationFactor * self.lerpTargetY
-                    self.cardRectangle.setPosition(x, y)
-                    self.borderRectangle.setPosition(x, y)
-                    self.cardLabel.setPosition(x + 20, y + 15)
+                    self.setPosition(x,y)
             else:
                 self.drag()
+                self.matchParentCard()
 
             self.cardRectangle.draw(screen)
             self.borderRectangle.draw(screen)

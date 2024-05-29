@@ -76,6 +76,7 @@ class Rectangle(pygame.sprite.Sprite):
         self.rect = self.surf.get_rect().move(self.x,self.y)
 
     def setColor(self,color):
+        self.color = color
         pygame.draw.rect(self.surf, self.color, self.surf.get_rect(), self.borderWidth, border_radius=self.borderRadius)
         self.surf.set_alpha(self.alpha)
 
