@@ -132,7 +132,6 @@ class Card():
             for card in DeckManager.grabbedCardList:
                 if(card.parentCard != None):
                     card.owner = card.parentCard.owner
-                card.moveWithCard = False
                 card.owner.cards.append(card)
             DeckManager.grabbedCardList = []
         else:

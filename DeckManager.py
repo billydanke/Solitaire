@@ -2,6 +2,7 @@ import random
 from Card import Card
 from CardLane import CardLane
 from SuitStack import SuitStack
+from DrawPile import DrawPile
 
 suits = ["Hearts","Diamonds","Clubs","Spades"]
 values = list(range(1,13))
@@ -11,6 +12,7 @@ cardSize = [100, 150]
 
 laneList = []
 suitStackList = []
+drawPile = None
 
 grabbedCardList = []
 
