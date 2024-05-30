@@ -53,6 +53,16 @@ class Card():
             # Get children cards and append them as well
             childCards:list[Card] = self.owner.getChildCards(self)
 
+            # If the owner is DrawPile, set the cheaty flip on the card below
+            if(self.owner.type == "DrawPile"):
+                prevCard:Card = None
+                if(len(self.owner.cards) > 1):
+                    prevCard = self.owner.cards[-2]
+                if(prevCard != None and not (prevCard in self.owner.pileCards)):
+                    # At this point, we know that the prevCard is the card below the topmost
+                    prevCard.flippedOver = True
+                    print(f"set card {prevCard.labelText} to cheaty flipped")
+
             self.owner.cards.remove(self)
 
             for index,card in enumerate(childCards):
@@ -121,7 +131,7 @@ class Card():
             # Assign the new ownership if applicable
             if(destination != None):
                 _,_,card = self.owner.getTopmostCard()
-                if(card != None and card.flippedOver): # Unflip the card above in the original lane
+                if(self.owner.type != "DrawPile" and card != None and card.flippedOver): # Unflip the card above in the original lane
                     card.setFlipState(False)
 
                 self.owner = destination
@@ -160,7 +170,7 @@ class Card():
             if(destination != None):
                 if(destination != None):
                     _,_,card = self.owner.getTopmostCard()
-                    if(card != None and card.flippedOver): # Unflip the card above in the original lane
+                    if(self.owner.type != "DrawPile" and card != None and card.flippedOver): # Unflip the card above in the original lane
                         card.setFlipState(False)
                 
                 self.owner = destination
@@ -194,7 +204,7 @@ class Card():
 
     def matchParentCard(self):
         if(self.moveWithCard and self.parentCard != None):
-            self.setPosition(self.parentCard.x, self.parentCard.y + 30)
+            self.setPosition(self.parentCard.x, self.parentCard.y + DeckManager.cardSpacing)
 
     def lerpTo(self, x, y, speed):
         self.lerpSourceX = self.x
@@ -217,8 +227,6 @@ class Card():
             self.flippedOver = True
             self.cardRectangle.setColor((19,87,156))
             self.cardLabel.isDrawn = False
-            if(self.owner.laneNumber == 1):
-                print(self.cardRectangle.color)
         else:
             self.flippedOver = False
             self.cardRectangle.setColor((255,255,255))
@@ -284,6 +292,15 @@ class Card():
                         card.moveWithCard = False
                         card.parentCard = None
                         card.childCard = None
+
+                    # And then make sure there is no cheaty flip on the DrawPile top card
+                    topCard:Card = None
+                    if(len(DeckManager.drawPile.cards) > 0):
+                        topCard = DeckManager.drawPile.cards[-1]
+                    if(topCard != None and not (topCard in DeckManager.drawPile.pileCards)):
+                        # At this point, we know that the prevCard is the card below the topmost
+                        topCard.flippedOver = False
+                        print(f"fixed card {topCard.labelText}'s flip")
 
                 else:
                     x = (1 - self.interpolationFactor) * self.lerpSourceX + self.interpolationFactor * self.lerpTargetX

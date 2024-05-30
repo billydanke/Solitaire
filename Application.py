@@ -17,16 +17,11 @@ menu = PyGameComponents.Menu(0,0,EventManager.windowSize[0],EventManager.windowS
 menu.addContentItem(leftRect) # Note that order you add content items to the menu is the draw order
 menu.addContentItem(rightRect)
 
-drawPile = DrawPile(30,20)
+drawPile = DrawPile(15,20, 10)
 menu.addContentItem(drawPile)
 
 for i in range(1,8):
-    cardLane = CardLane(200 + (i-1) * (DeckManager.cardSize[0] + 30), 50, i, 30)
-    for j in range(0,i):
-        if(j % 2 == 0):
-            cardLane.cards.append(Card(cardLane.x,cardLane.y + (j*30),"Hearts",j+6,False,cardLane,True))
-        else:
-            cardLane.cards.append(Card(cardLane.x,cardLane.y + (j*30),"Clubs",j+6,False,cardLane,True))
+    cardLane = CardLane(200 + (i-1) * (DeckManager.cardSize[0] + 30), 50, i, DeckManager.cardSpacing)
     
     menu.addContentItem(cardLane)
 
@@ -41,6 +36,8 @@ menu.addContentItem(stackClubs)
 menu.addContentItem(stackSpades)
 
 menu.isDrawn = True
+
+DeckManager.populateLanes()
 
 def draw():
 

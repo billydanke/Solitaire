@@ -16,6 +16,7 @@ class SuitStack():
         self.cards: list[Card] = []
 
         self.isDrawn = True
+        self.type = "SuitStack"
 
         DeckManager.suitStackList.append(self)
 

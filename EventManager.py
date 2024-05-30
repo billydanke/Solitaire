@@ -1,5 +1,6 @@
 import pygame
 from datetime import datetime
+import DeckManager
 import Utils
 
 buttonList = []
@@ -49,6 +50,9 @@ class EventManager():
                     if(len(cardsHit) != 0):
                         cardsHit[-1].pressDown()
 
+                    if DeckManager.drawPile != None and Utils.PointWithinBounds(clickPoint,DeckManager.drawPile) and DeckManager.drawPile.isDrawn:
+                        DeckManager.drawPile.pressDown()
+
             if event.type == pygame.MOUSEBUTTONUP:
                 lastInteractionTimestamp = datetime.now()
                 if event.button	== 1:
@@ -59,3 +63,5 @@ class EventManager():
                     for c in cardList:
                         if c.pressed:
                             c.pressUp()
+                    if DeckManager.drawPile != None and DeckManager.drawPile.pressed:
+                        DeckManager.drawPile.pressUp()

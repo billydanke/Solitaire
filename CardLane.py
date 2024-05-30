@@ -14,6 +14,7 @@ class CardLane():
         self.cards: list[Card] = []
 
         self.isDrawn = True
+        self.type = "CardLane"
 
         DeckManager.laneList.append(self)
 
