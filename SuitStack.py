@@ -12,6 +12,7 @@ class SuitStack():
 
         self.backgroundRectangle = PyGameComponents.Rectangle(self.x, self.y, self.width, self.height, (100,200,100), 255, 5, 5)
         self.backgroundLabel = PyGameComponents.Text(self.x + self.width/2, self.y + self.height/2, self.generateLabelInfo(), 'arial', 64, (75,150,75),True)
+        #self.topNumberLabel = PyGameComponents.Text(self.x + self.width/2, self.y + self.height/2, "", 'arial', 64, (75,150,75),True)
 
         self.cards: list[Card] = []
 
@@ -57,3 +58,7 @@ class SuitStack():
 
             for card in self.cards:
                 card.draw(screen)
+
+            #_,num,_ = self.getTopmostCard()
+            #self.topNumberLabel.changeText(str(num))
+            #self.topNumberLabel.draw(screen)

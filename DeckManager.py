@@ -61,7 +61,7 @@ def laneCardAcceptanceCheck(card: Card, lane: CardLane) -> bool:
 
     if(card.owner.type == "CardLane" and lane.laneNumber == card.owner.laneNumber):
         return False
-
+    
     # Number check
     if(card.cardNumber != topCardNumber - 1):
         return False
@@ -79,6 +79,9 @@ def laneCardAcceptanceCheck(card: Card, lane: CardLane) -> bool:
 
 def suitStackCardAcceptanceCheck(card: Card, stack: SuitStack) -> bool:
     _,topCardNumber,_ = stack.getTopmostCard()
+
+    if(card.owner.type == "SuitStack" and stack.cardSuit == card.cardSuit):
+        return False
 
     # Number check
     if(card.cardNumber != topCardNumber + 1):

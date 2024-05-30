@@ -112,20 +112,20 @@ class Card():
             # Check if any valid positions are open. If there is one, lerp to it.
             destination = None
 
-            # Check for any open lane locations
-            for lane in DeckManager.laneList:
-                acceptance = DeckManager.laneCardAcceptanceCheck(self,lane)
-                if(acceptance):
-                    destination = lane
-                    break
-            #print("---------")
-            
             # Check for any open stack locations
-            if(destination == None and self.childCard == None):
+            if(self.childCard == None):
                 for stack in DeckManager.suitStackList:
                     acceptance = DeckManager.suitStackCardAcceptanceCheck(self,stack)
                     if(acceptance):
                         destination = stack
+                        break
+
+            # Check for any open lane locations
+            if(destination == None):
+                for lane in DeckManager.laneList:
+                    acceptance = DeckManager.laneCardAcceptanceCheck(self,lane)
+                    if(acceptance):
+                        destination = lane
                         break
             
             # Assign the new ownership if applicable
