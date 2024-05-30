@@ -61,7 +61,7 @@ class Card():
                 if(prevCard != None and not (prevCard in self.owner.pileCards)):
                     # At this point, we know that the prevCard is the card below the topmost
                     prevCard.flippedOver = True
-                    print(f"set card {prevCard.labelText} to cheaty flipped")
+                    #print(f"set card {prevCard.labelText} to cheaty flipped")
 
             self.owner.cards.remove(self)
 
@@ -300,7 +300,7 @@ class Card():
                     if(topCard != None and not (topCard in DeckManager.drawPile.pileCards)):
                         # At this point, we know that the prevCard is the card below the topmost
                         topCard.flippedOver = False
-                        print(f"fixed card {topCard.labelText}'s flip")
+                        #print(f"fixed card {topCard.labelText}'s flip")
 
                 else:
                     x = (1 - self.interpolationFactor) * self.lerpSourceX + self.interpolationFactor * self.lerpTargetX
