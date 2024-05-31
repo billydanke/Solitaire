@@ -9,7 +9,8 @@ suits = ["Hearts","Diamonds","Clubs","Spades"]
 values = list(range(1,13))
 deck = [(suit,value) for suit in suits for value in values]
 
-cardSize = [100, 150]
+#cardSize = [100, 150]
+cardSize = [90,135]
 cardSpacing = 30
 
 laneList:list[CardLane] = []

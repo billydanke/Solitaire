@@ -3,8 +3,8 @@ import DeckManager
 import PyGameComponents
 from SuitStack import SuitStack
 from CardLane import CardLane
-from Card import Card
 from DrawPile import DrawPile
+from ScoreDisplay import ScoreDisplay
 import pygame
 
 pygame.init()
@@ -17,23 +17,25 @@ menu = PyGameComponents.Menu(0,0,EventManager.windowSize[0],EventManager.windowS
 menu.addContentItem(leftRect) # Note that order you add content items to the menu is the draw order
 menu.addContentItem(rightRect)
 
-drawPile = DrawPile(15,20, 10)
+drawPile = DrawPile(15,70, 10)
 menu.addContentItem(drawPile)
 
 for i in range(1,8):
-    cardLane = CardLane(200 + (i-1) * (DeckManager.cardSize[0] + 30), 50, i, DeckManager.cardSpacing)
-    
+    cardLane = CardLane(235 + (i-1) * (DeckManager.cardSize[0] + 30), 100, i, DeckManager.cardSpacing)
     menu.addContentItem(cardLane)
 
-stackHearts = SuitStack(EventManager.windowSize[0] - (DeckManager.cardSize[0] + 15), 20, "Hearts")
-stackDiamonds = SuitStack(EventManager.windowSize[0] - (DeckManager.cardSize[0] + 15), 20 + (1) * (DeckManager.cardSize[1] + 20), "Diamonds")
-stackClubs = SuitStack(EventManager.windowSize[0] - (DeckManager.cardSize[0] + 15), 20 + (2) * (DeckManager.cardSize[1] + 20), "Clubs")
-stackSpades = SuitStack(EventManager.windowSize[0] - (DeckManager.cardSize[0] + 15), 20 + (3) * (DeckManager.cardSize[1] + 20), "Spades")
+stackHearts = SuitStack(EventManager.windowSize[0] - (DeckManager.cardSize[0] + 15), 85, "Hearts")
+stackDiamonds = SuitStack(EventManager.windowSize[0] - (DeckManager.cardSize[0] + 15), 85 + (1) * (DeckManager.cardSize[1] + 20), "Diamonds")
+stackClubs = SuitStack(EventManager.windowSize[0] - (DeckManager.cardSize[0] + 15), 85 + (2) * (DeckManager.cardSize[1] + 20), "Clubs")
+stackSpades = SuitStack(EventManager.windowSize[0] - (DeckManager.cardSize[0] + 15), 85 + (3) * (DeckManager.cardSize[1] + 20), "Spades")
 
 menu.addContentItem(stackHearts)
 menu.addContentItem(stackDiamonds)
 menu.addContentItem(stackClubs)
 menu.addContentItem(stackSpades)
+
+scoreDisplay = ScoreDisplay(50,(60,60,60))
+menu.addContentItem(scoreDisplay)
 
 menu.isDrawn = True
 

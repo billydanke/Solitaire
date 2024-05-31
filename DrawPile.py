@@ -1,6 +1,7 @@
 import DeckManager
 import EventManager
 import PyGameComponents
+import ScoreManager
 from Card import Card
 
 class DrawPile():
@@ -62,6 +63,9 @@ class DrawPile():
         y = self.y + self.height + self.drawShiftOffset
         card.lerpTo(self.x,y,0.1)
 
+        # Handle score
+        ScoreManager.HandlePileMove()
+
     def loopCardsBack(self):
         # Reverse the card list
         self.cards.reverse()
@@ -73,6 +77,9 @@ class DrawPile():
             self.pileCards.append(card)
             card.setFlipState(True)
             card.lerpTo(self.x,self.y,0.1)
+
+        # Handle score
+        ScoreManager.HandlePileTurnover()
 
     def PopulateCards(self):
         while(len(DeckManager.deck) > 0):

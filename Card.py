@@ -1,6 +1,7 @@
 import PyGameComponents
 import EventManager
 import DeckManager
+import ScoreManager
 import Utils
 
 class Card():
@@ -133,6 +134,10 @@ class Card():
                 _,_,card = self.owner.getTopmostCard()
                 if(self.owner.type != "DrawPile" and card != None and card.flippedOver): # Unflip the card above in the original lane
                     card.setFlipState(False)
+                    ScoreManager.HandleCardTurnover()
+
+                # Calculate score from this move
+                ScoreManager.HandleMove(self.owner.type, destination.type)
 
                 self.owner = destination
                 dropPosition = [destination.x, destination.getCardDropPosition()]
@@ -172,6 +177,10 @@ class Card():
                     _,_,card = self.owner.getTopmostCard()
                     if(self.owner.type != "DrawPile" and card != None and card.flippedOver): # Unflip the card above in the original lane
                         card.setFlipState(False)
+                        ScoreManager.HandleCardTurnover()
+                
+                # Calculate score from this move
+                ScoreManager.HandleMove(self.owner.type, destination.type)
                 
                 self.owner = destination
                 dropPosition = [destination.x, destination.getCardDropPosition()]
