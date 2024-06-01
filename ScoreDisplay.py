@@ -1,7 +1,7 @@
 import EventManager
 import ScoreManager
+import GameManager
 import PyGameComponents
-from datetime import timedelta
 
 class ScoreDisplay():
     def __init__(self, height, color):
@@ -32,17 +32,17 @@ class ScoreDisplay():
         hours, remainder = divmod(timeDifference.total_seconds(), 3600)
         minutes, seconds = divmod(remainder, 60)
         timeString = f"{int(hours):01}:{int(minutes):02}:{int(seconds):02}"
-        if(self.timeString != timeString):
+        if(self.timeString != timeString and not GameManager.hasWon):
             self.timeString = timeString
             self.timeDisplay.changeText(timeString)
 
     def updateScoreDisplay(self):
-        if(self.score != ScoreManager.score):
+        if(self.score != ScoreManager.score and not GameManager.hasWon):
             self.score = ScoreManager.score
             self.scoreDisplay.changeText(str(self.score))
 
     def updateMovesDisplay(self):
-        if(self.moves != ScoreManager.moves):
+        if(self.moves != ScoreManager.moves and not GameManager.hasWon):
             self.moves = ScoreManager.moves
             self.movesDisplay.changeText(str(self.moves))
 

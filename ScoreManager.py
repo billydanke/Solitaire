@@ -38,9 +38,12 @@ def HandlePileMove():
     global moves
     moves += 1
 
-def HandlePileTurnover():
+def HandlePileTurnover(cards):
     # When the DrawPile turns over, -100 points for the second turnover onward.
     global pileTurnovers
+
+    if(len(cards) == 0):
+        return
 
     if(pileTurnovers > 0):
         AdjustScore(-100)

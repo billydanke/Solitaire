@@ -2,6 +2,7 @@ import DeckManager
 import EventManager
 import PyGameComponents
 import ScoreManager
+import GameManager
 from Card import Card
 
 class DrawPile():
@@ -27,7 +28,7 @@ class DrawPile():
         self.PopulateCards()
 
     def pressDown(self):
-        if(self.isDrawn):
+        if(self.isDrawn and not GameManager.hasWon):
             self.pressed = True
 
     def pressUp(self):
@@ -79,7 +80,7 @@ class DrawPile():
             card.lerpTo(self.x,self.y,0.1)
 
         # Handle score
-        ScoreManager.HandlePileTurnover()
+        ScoreManager.HandlePileTurnover(self.cards)
 
     def PopulateCards(self):
         while(len(DeckManager.deck) > 0):

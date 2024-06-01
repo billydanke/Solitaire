@@ -2,6 +2,8 @@ import PyGameComponents
 import EventManager
 import DeckManager
 import ScoreManager
+import GameManager
+import GameManager
 import Utils
 
 class Card():
@@ -44,7 +46,7 @@ class Card():
         EventManager.cardList.append(self)
 
     def pressDown(self):
-        if(self.isDrawn and not self.flippedOver and not self.inLerpMovement):
+        if(self.isDrawn and not self.flippedOver and not self.inLerpMovement and not GameManager.hasWon):
             self.moveWithMouse = True
             self.pressed = True
             DeckManager.grabbedCardList.append(self)
@@ -130,25 +132,7 @@ class Card():
                         break
             
             # Assign the new ownership if applicable
-            if(destination != None):
-                _,_,card = self.owner.getTopmostCard()
-                if(self.owner.type != "DrawPile" and card != None and card.flippedOver): # Unflip the card above in the original lane
-                    card.setFlipState(False)
-                    ScoreManager.HandleCardTurnover()
-
-                # Calculate score from this move
-                ScoreManager.HandleMove(self.owner.type, destination.type)
-
-                self.owner = destination
-                dropPosition = [destination.x, destination.getCardDropPosition()]
-                self.lerpTo(dropPosition[0], dropPosition[1], 0.1)
-            else:
-                self.lerpTo(self.dragSourceX, self.dragSourceY, 0.1)
-            for card in DeckManager.grabbedCardList:
-                if(card.parentCard != None):
-                    card.owner = card.parentCard.owner
-                card.owner.cards.append(card)
-            DeckManager.grabbedCardList = []
+            self.handleDestination(destination)
         else:
             # We can assume the mouse DID move.
             # Check for a good landing position. If there is one, lerp to it.
@@ -164,35 +148,46 @@ class Card():
             #print("---------")
 
             # Check if we dropped within bounds of a stack
+            print(f"{type(destination)} and child: {type(self.childCard)}")
+            if(type(self.childCard) == type(self)):
+                print(f"Child card name: {self.childCard.labelText}")
             if(destination == None and self.childCard == None):
                 for stack in DeckManager.suitStackList:
                     withinBounds = Utils.PointWithinBounds(EventManager.releasePoint,stack)
-                    if(withinBounds and DeckManager.suitStackCardAcceptanceCheck(self,stack)):
+                    if(withinBounds):
+                        print(f"Within bounds of stack {stack.cardSuit}")
+                    if(withinBounds and DeckManager.suitStackCardAcceptanceCheck(self,stack) == True):
                         destination = stack
                         break
-
+            
             # Assign the new ownership if applicable
-            if(destination != None):
-                if(destination != None):
-                    _,_,card = self.owner.getTopmostCard()
-                    if(self.owner.type != "DrawPile" and card != None and card.flippedOver): # Unflip the card above in the original lane
-                        card.setFlipState(False)
-                        ScoreManager.HandleCardTurnover()
-                
-                # Calculate score from this move
-                ScoreManager.HandleMove(self.owner.type, destination.type)
-                
-                self.owner = destination
-                dropPosition = [destination.x, destination.getCardDropPosition()]
-                self.lerpTo(dropPosition[0], dropPosition[1], 0.1)
-            else:
-                self.lerpTo(self.dragSourceX, self.dragSourceY, 0.1)
-            for card in DeckManager.grabbedCardList:
-                if(card.parentCard != None):
-                    card.owner = card.parentCard.owner
-                card.owner.cards.append(card)
-                
-            DeckManager.grabbedCardList = []
+            self.handleDestination(destination)
+
+    def handleDestination(self, destination):
+        if(destination != None):
+            _,_,card = self.owner.getTopmostCard()
+            if(self.owner.type != "DrawPile" and card != None and card.flippedOver): # Unflip the card above in the original lane
+                card.setFlipState(False)
+                ScoreManager.HandleCardTurnover()
+            
+            # Calculate score from this move
+            ScoreManager.HandleMove(self.owner.type, destination.type)
+            
+            #print(f"Moving from {self.owner.type} to {destination.type}")
+
+            self.owner = destination
+            dropPosition = [destination.x, destination.getCardDropPosition()]
+            self.lerpTo(dropPosition[0], dropPosition[1], 0.1)
+        else:
+            self.lerpTo(self.dragSourceX, self.dragSourceY, 0.1)
+        for card in DeckManager.grabbedCardList:
+            if(card.parentCard != None):
+                card.owner = card.parentCard.owner
+            card.owner.cards.append(card)
+            # Check win condition
+            GameManager.CheckForWinCondition()
+
+        DeckManager.grabbedCardList = []
 
     def drag(self):
         if(self.moveWithMouse):
@@ -292,15 +287,20 @@ class Card():
 
                     # We have now completed the interpolation. If we have any children, make sure to decouple them
                     #print("interpolaton complete")
-                    childCard:Card = self.childCard
+                    childCard:Card = self
+                    #print("Setting children to none")
                     while(childCard != None):
+                        #print("In childcard")
                         card = childCard
                         childCard = childCard.childCard
+
+                        #print(f"card: {type(card)}, childCard: {type(childCard)}")
 
                         #print(f"Decoupling {card.labelText}")
                         card.moveWithCard = False
                         card.parentCard = None
                         card.childCard = None
+                        #print(f"card: {type(card)}, self.childcard: {type(self.childCard)}")
 
                     # And then make sure there is no cheaty flip on the DrawPile top card
                     topCard:Card = None

@@ -5,6 +5,7 @@ from SuitStack import SuitStack
 from CardLane import CardLane
 from DrawPile import DrawPile
 from ScoreDisplay import ScoreDisplay
+from GameOverCard import GameOverCard
 import pygame
 
 pygame.init()
@@ -36,6 +37,9 @@ menu.addContentItem(stackSpades)
 
 scoreDisplay = ScoreDisplay(50,(60,60,60))
 menu.addContentItem(scoreDisplay)
+
+gameOverCard = GameOverCard(EventManager.windowSize[0]/2 - 300, EventManager.windowSize[1]/2 - 200, 600, 400, (255,255,255))
+menu.addContentItem(gameOverCard)
 
 menu.isDrawn = True
 

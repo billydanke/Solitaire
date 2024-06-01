@@ -14,10 +14,17 @@ cardSize = [90,135]
 cardSpacing = 30
 
 laneList:list[CardLane] = []
-suitStackList = []
+suitStackList:list[SuitStack] = []
 drawPile:DrawPile = None
 
 grabbedCardList = []
+
+def ReloadDeck():
+    global suits
+    global values
+    global deck
+
+    deck = [(suit,value) for suit in suits for value in values]
 
 def drawCard():
     card = random.choice(deck)
@@ -25,8 +32,8 @@ def drawCard():
     return card
 
 def populateLanes():
-    # Start here tomorrow: grab cards off the top of the draw pile and put them into the lanes.
-    #                      all cards remain flipped except for the last of each lane.
+    # Grab cards off the top of the draw pile and put them into the lanes.
+    # All cards remain flipped except for the last of each lane.
 
     if(drawPile == None):
         return
@@ -54,7 +61,6 @@ def populateLanes():
             # Flip the topmost card to be face up
             if(i == lane.laneNumber-1):
                 card.setFlipState(False)
-
 
 def laneCardAcceptanceCheck(card: Card, lane: CardLane) -> bool:
     topCardSuit,topCardNumber,_ = lane.getTopmostCard()
