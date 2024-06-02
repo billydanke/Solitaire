@@ -6,6 +6,7 @@ from CardLane import CardLane
 from DrawPile import DrawPile
 from ScoreDisplay import ScoreDisplay
 from GameOverCard import GameOverCard
+from AutoCompleteButton import AutoCompleteButton
 import pygame
 
 pygame.init()
@@ -37,6 +38,9 @@ menu.addContentItem(stackSpades)
 
 scoreDisplay = ScoreDisplay(50,(60,60,60))
 menu.addContentItem(scoreDisplay)
+
+autoCompleteButton = AutoCompleteButton(EventManager.windowSize[0]/2 - 150, EventManager.windowSize[1]/4*3, 48, (255,255,255),(200,200,200),(100,100,100))
+menu.addContentItem(autoCompleteButton)
 
 gameOverCard = GameOverCard(EventManager.windowSize[0]/2 - 300, EventManager.windowSize[1]/2 - 200, 600, 400, (255,255,255))
 menu.addContentItem(gameOverCard)

@@ -148,14 +148,9 @@ class Card():
             #print("---------")
 
             # Check if we dropped within bounds of a stack
-            print(f"{type(destination)} and child: {type(self.childCard)}")
-            if(type(self.childCard) == type(self)):
-                print(f"Child card name: {self.childCard.labelText}")
             if(destination == None and self.childCard == None):
                 for stack in DeckManager.suitStackList:
                     withinBounds = Utils.PointWithinBounds(EventManager.releasePoint,stack)
-                    if(withinBounds):
-                        print(f"Within bounds of stack {stack.cardSuit}")
                     if(withinBounds and DeckManager.suitStackCardAcceptanceCheck(self,stack) == True):
                         destination = stack
                         break
@@ -186,6 +181,9 @@ class Card():
             card.owner.cards.append(card)
             # Check win condition
             GameManager.CheckForWinCondition()
+            
+            # Check if Auto-Complete is available
+            GameManager.CheckForAutoComplete()
 
         DeckManager.grabbedCardList = []
 

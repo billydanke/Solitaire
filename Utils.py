@@ -1,4 +1,5 @@
 import math
+import DeckManager
 
 def PointDistance(point1, point2):
     x1, y1 = point1
@@ -16,3 +17,11 @@ def PointWithinBounds(point, obj):
     
     # Otherwise, we know that the point is within object bounds
     return True
+
+def GetTotalCardLaneCount():
+    cardCount = 0
+
+    for lane in DeckManager.laneList:
+        cardCount += len(lane.cards)
+
+    return cardCount
