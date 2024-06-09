@@ -47,7 +47,7 @@ class Entity(pygame.sprite.Sprite):
             screen.blit(self.surf,(self.rect.x,self.rect.y))
 
 class Rectangle(pygame.sprite.Sprite):
-    def __init__(self,x,y,width,height,color, alpha = 255, borderWidth = 0, borderRadius = 0, isDrawn = True, id=""):
+    def __init__(self,x,y,width,height,color, alpha = 255, borderWidth = 0, cornerRadius = 0, isDrawn = True, id=""):
         self.surf = pygame.Surface([width,height],pygame.SRCALPHA)
 
         self.x = x
@@ -55,10 +55,10 @@ class Rectangle(pygame.sprite.Sprite):
         self.color = color
         self.alpha = alpha
         self.borderWidth = borderWidth
-        self.borderRadius = borderRadius
+        self.cornerRadius = cornerRadius
 
         self.rect = self.surf.get_rect().move(self.x,self.y)
-        pygame.draw.rect(self.surf, self.color, self.surf.get_rect(), self.borderWidth, border_radius=self.borderRadius)
+        pygame.draw.rect(self.surf, self.color, self.surf.get_rect(), self.borderWidth, border_radius=self.cornerRadius)
         self.surf.set_alpha(self.alpha)
 
         self.id = id
@@ -77,20 +77,18 @@ class Rectangle(pygame.sprite.Sprite):
 
     def setColor(self,color):
         self.color = color
-        pygame.draw.rect(self.surf, self.color, self.surf.get_rect(), self.borderWidth, border_radius=self.borderRadius)
+        pygame.draw.rect(self.surf, self.color, self.surf.get_rect(), self.borderWidth, border_radius=self.cornerRadius)
         self.surf.set_alpha(self.alpha)
 
     def setAlpha(self,alpha):
         self.surf.set_alpha(self.alpha)
-        print("Changed button alpha")
 
     def draw(self,screen):
         if(self.isDrawn):
             if(self.alpha == 255):
-                pygame.draw.rect(screen, self.color, self.rect, self.borderWidth, border_radius=self.borderRadius)
+                pygame.draw.rect(screen, self.color, self.rect, self.borderWidth, border_radius=self.cornerRadius)
             else:
                 screen.blit(self.surf, (self.x, self.y))
-            #screen.blit(self.surf,(self.rect.x,self.rect.y))
 
 class Circle():
     def __init__(self,x,y,radius,color,alpha=255,width = 0, isDrawn=True, id=""):
@@ -169,7 +167,7 @@ class Menu(Rectangle):
             item.draw(screen)
 
 class Text():
-    def __init__(self,x,y,text,font,size,textColor,bold=False,aa=True,isDrawn = True,id=""):
+    def __init__(self,x,y,text,font,size,textColor,bold=False,aa=True,flipX=False,flipY=False,isDrawn=True,id=""):
         self.x = x
         self.y = y
         self.stringText = text
@@ -178,9 +176,14 @@ class Text():
         self.textColor = textColor
         self.aa = aa
         self.bold = bold
+        self.flipX = flipX
+        self.flipY = flipY
 
         self.fontObject = pygame.font.SysFont(self.font,self.size,bold=self.bold)
         self.text = self.fontObject.render(self.stringText,self.aa,self.textColor)
+
+        if(self.flipX or self.flipY):
+            self.text = pygame.transform.flip(self.text,self.flipX,self.flipY)
 
         self.rect = self.text.get_rect()
         self.rect.center = (self.x,self.y)
@@ -192,6 +195,10 @@ class Text():
         self.stringText = text
         self.fontObject = pygame.font.SysFont(self.font,self.size,bold=self.bold)
         self.text = self.fontObject.render(self.stringText,self.aa,self.textColor)
+
+        if(self.flipX or self.flipY):
+            self.text = pygame.transform.flip(self.text,self.flipX,self.flipY)
+            
         self.rect = self.text.get_rect()
         self.rect.center = (self.x,self.y)
 

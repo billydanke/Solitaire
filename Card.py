@@ -20,6 +20,7 @@ class Card():
 
         self.labelText,self.labelColor = self.generateLabelInfo()
         self.cardLabel = PyGameComponents.Text(self.x + 20, self.y + 15, self.labelText, "arial", 18, self.labelColor, True)
+        self.inverseCardLabel = PyGameComponents.Text(self.x + self.width - 20, self.y + self.height - 15, self.labelText, 'arial', 18, self.labelColor, True, flipX=True, flipY=True)
 
         # Linear interpolation movement stuff
         self.lerpSourceX = 0
@@ -223,16 +224,19 @@ class Card():
         self.cardRectangle.setPosition(x, y)
         self.borderRectangle.setPosition(x, y)
         self.cardLabel.setPosition(x + 20, y + 15)
+        self.inverseCardLabel.setPosition(x + self.width - 20, y + self.height - 15)
 
     def setFlipState(self, flip):
         if(flip == True):
             self.flippedOver = True
             self.cardRectangle.setColor((19,87,156))
             self.cardLabel.isDrawn = False
+            self.inverseCardLabel.isDrawn = False
         else:
             self.flippedOver = False
             self.cardRectangle.setColor((255,255,255))
             self.cardLabel.isDrawn = True
+            self.inverseCardLabel.isDrawn = True
 
     def generateLabelInfo(self):
         text = ""
@@ -320,3 +324,4 @@ class Card():
             self.cardRectangle.draw(screen)
             self.borderRectangle.draw(screen)
             self.cardLabel.draw(screen)
+            self.inverseCardLabel.draw(screen)
