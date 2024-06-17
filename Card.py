@@ -4,6 +4,7 @@ import DeckManager
 import ScoreManager
 import GameManager
 import GameManager
+import MoveStack
 import Utils
 
 class Card():
@@ -159,7 +160,7 @@ class Card():
             # Assign the new ownership if applicable
             self.handleDestination(destination)
 
-    def handleDestination(self, destination):
+    def handleDestination(self, destination, addMoveToStack = True):
         if(destination != None):
             _,_,card = self.owner.getTopmostCard()
             if(self.owner.type != "DrawPile" and card != None and card.flippedOver): # Unflip the card above in the original lane
@@ -169,6 +170,10 @@ class Card():
             # Calculate score from this move
             ScoreManager.HandleMove(self.owner.type, destination.type)
             
+            # Add this card movement to the moveStack
+            if(addMoveToStack):
+                MoveStack.AddMove(self,self.owner,destination)
+
             #print(f"Moving from {self.owner.type} to {destination.type}")
 
             self.owner = destination
@@ -176,10 +181,12 @@ class Card():
             self.lerpTo(dropPosition[0], dropPosition[1], 0.1)
         else:
             self.lerpTo(self.dragSourceX, self.dragSourceY, 0.1)
+
         for card in DeckManager.grabbedCardList:
             if(card.parentCard != None):
                 card.owner = card.parentCard.owner
             card.owner.cards.append(card)
+
             # Check win condition
             GameManager.CheckForWinCondition()
             

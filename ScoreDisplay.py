@@ -1,5 +1,6 @@
 import EventManager
 import ScoreManager
+import MoveStack
 import GameManager
 import PyGameComponents
 
@@ -20,6 +21,8 @@ class ScoreDisplay():
         self.movesDisplay = PyGameComponents.Text(self.x + self.width/2 + 40, self.y + self.height/2, "0", 'arial', 20, (255,255,255), True)
 
         self.timeDisplay = PyGameComponents.Text(self.x + self.width/3*2, self.y + self.height/2, "0:00:00", 'arial', 20, (255,255,255), True)
+
+        self.UndoButton = PyGameComponents.TextButton(self.x + self.width/5*4, self.y + self.height/2, "Undo", 20, (255,255,255), None, MoveStack.UndoMove) 
 
         self.score = ScoreManager.score
         self.moves = ScoreManager.moves
@@ -58,3 +61,4 @@ class ScoreDisplay():
             self.movesLabel.draw(screen)
             self.movesDisplay.draw(screen)
             self.timeDisplay.draw(screen)
+            self.UndoButton.draw(screen)
