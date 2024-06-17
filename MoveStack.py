@@ -52,6 +52,7 @@ def UndoMove():
     # Reset the card's owner to its source.
     for card in DeckManager.grabbedCardList:
             EventManager.cardList.remove(card)
-            EventManager.cardList.append(card)
+            EventManager.cardList.append(card)odfajsdfa;lskdjf # Anything to do with the drawPile is broken still.
+                                                               # Also, we need to add re-hiding the card above if applicable.
 
     card.handleDestination(source,False)
